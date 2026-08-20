@@ -16,6 +16,7 @@ class GPAY {
 			cout<<"Account Created"<<endl;
 			cout<<"Name : "<<firstName<<" "<<lastName<<endl;
 			cout<<"Balance : "<<balance<<endl;
+			cout << "====================" << endl;
 
 		}
 		void setName(string firstName,string lastName){
@@ -25,6 +26,7 @@ class GPAY {
 		void details(){
 			cout<<"Name : "<<firstName<<" "<<lastName<<endl;
 			cout<<"Balance : "<<balance<<endl;
+			cout << "====================" << endl;
 		}
 		void history(int amount){
 			transactions.push_back(amount);
@@ -34,18 +36,18 @@ class GPAY {
 		}
 		int debit(int amount){
 			if(amount>balance){
-				cout<<"Low Balance"<<endl;
+				cout<<firstName<<" "<<lastName<<" : Low Balance"<<endl;
 				return 0;
 			}
 			history(-amount);
 			balance -= amount;
-			cout<<"Balance Debited"<<endl;
+			cout<<firstName<<" "<<lastName<<" : Balance Debited"<<endl;
 			return amount;
 		}
 		void deposit(int amount){
 			history(amount);
 			balance += amount;
-			cout<<"Balance Deposited"<<endl;
+			cout<<firstName<<" "<<lastName<<" : Balance Deposited"<<endl;
 		}
 		void Pay(GPAY& RP,int amount){
 			int money = debit(amount);
@@ -53,30 +55,66 @@ class GPAY {
 				return ;
 			}
 			RP.deposit(money);
+			cout<<"Payed to : "<<firstName<<" "<<lastName<<endl;
 			cout<<"Transaction Completed"<<endl;
 		}
 		
 	
 };
 
-int main(){
-	// making 2 persons
-	GPAY P1("Subham","Kumar"),P2("Joshy","Thakur");
-	cout<<"============="<<endl;
-	// giving them initial  balance
-	P1.deposit(2000);
-	P2.deposit(1000);
-	cout<<"============="<<endl;
-	// taking 500  from P2 i.e joshy
-	P2.debit(500);
-	cout<<"============="<<endl;
-	// transfering 1000 from   P1  i.e subham to P2 i.e joshy
-	P1.Pay(P2,1000);
-	cout<<"============="<<endl;
-	// printing final details
-	P1.details();
-	P2.details();
-	cout<<"============="<<endl;
+int main() {
+    // Creating 5 users
+    GPAY P1("Subham", "Kumar");
+    GPAY P2("Joshy", "Thakur");
+    GPAY P3("Rahul", "Sharma");
+    GPAY P4("Aman", "Verma");
+    GPAY P5("Arjun", "Singh");
 
-	return 0;
+    cout << "====================" << endl;
+    // Giving initial balances
+    P1.deposit(2000);
+    P2.deposit(1000);
+    P3.deposit(3000);
+    P4.deposit(500);
+    P5.deposit(2500);
+
+    cout << "====================" << endl;
+
+    // Joshy debits 500
+    P2.debit(500);
+
+    cout << "====================" << endl;
+
+    // Subham pays Joshy 1000
+    P1.Pay(P2, 1000);
+
+    cout << "====================" << endl;
+
+    // Rahul pays Aman 1200
+    P3.Pay(P4, 1200);
+
+    cout << "====================" << endl;
+
+    // Arjun pays Rahul 700
+    P5.Pay(P3, 700);
+
+    cout << "====================" << endl;
+
+    // Final details
+    cout << "Subham: "<<endl;
+    P1.details();
+
+    cout << "Joshy: "<<endl;
+    P2.details();
+
+    cout << "Rahul: "<<endl;
+    P3.details();
+
+    cout << "Aman: "<<endl;
+    P4.details();
+
+    cout << "Arjun: "<<endl;
+    P5.details();
+
+    return 0;
 }
