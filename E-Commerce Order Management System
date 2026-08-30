@@ -1,0 +1,465 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+enum Category {
+    ELECTRONICS,
+    CLOTHING,
+    BOOKS,
+    GROCERIES
+};
+
+enum OrderStatus {
+    CREATED,
+    CONFIRMED,
+    CANCELLED,
+    DELIVERED
+};
+
+enum PaymentStatus {
+    PENDING,
+    SUCCESS,
+    FAILED
+};
+
+enum PaymentMethod {
+    CREDIT_CARD,
+    UPI,
+    CASH
+};
+
+union PaymentInfo {
+    int last4Digits;
+    char upiID[30];
+};
+
+class Product {
+private:
+    int productID;
+    string name;
+    double price;
+    int stock;
+    Category category;
+
+public:
+   
+    Product(int id, string n, double p, int s, Category c) {
+        productID = id;
+        name = n;
+        price = p;
+        stock = s;
+        category = c;
+    }
+    void displayProduct() {
+        cout << "\nProduct ID: " << productID;
+        cout << "\nName: " << name;
+        cout << "\nPrice: Rs. " << price;
+        cout << "\nStock: " << stock;
+
+        cout << "\nCategory: ";
+        switch (category) {
+            case ELECTRONICS:
+                cout << "Electronics";
+                break;
+            case CLOTHING:
+                cout << "Clothing";
+                break;
+            case BOOKS:
+                cout << "Books";
+                break;
+            case GROCERIES:
+                cout << "Groceries";
+                break;
+        }
+
+        cout << endl;
+    }
+
+  
+    void updateStock(int quantity) {
+        stock += quantity;
+    }
+
+  
+    bool checkAvailability(int quantity) {
+        return stock >= quantity;
+    }
+
+    int getProductID() {
+        return productID;
+    }
+
+    double getPrice() {
+        return price;
+    }
+};
+
+
+class Customer {
+private:
+    int customerID;
+    string name;
+    string email;
+    string phone;
+    string address;
+
+public:
+
+    Customer(int id, string n, string e, string p, string a) {
+        customerID = id;
+        name = n;
+        email = e;
+        phone = p;
+        address = a;
+    }
+
+    void displayCustomer() {
+        cout << "\nCustomer ID: " << customerID;
+        cout << "\nName: " << name;
+        cout << "\nEmail: " << email;
+        cout << "\nPhone: " << phone;
+        cout << "\nAddress: " << address << endl;
+    }
+    
+    void updateCustomer(string n, string e, string p, string a) {
+        name = n;
+        email = e;
+        phone = p;
+        address = a;
+    }
+
+    int getCustomerID() {
+        return customerID;
+    }
+};
+
+
+struct Order {
+    int orderID;
+    int customerID;
+    int productID;
+    int quantity;
+    double totalAmount;
+
+    OrderStatus orderStatus;
+    PaymentStatus paymentStatus;
+    PaymentMethod paymentMethod;
+
+    PaymentInfo paymentInfo;
+
+    Order(int oid, int cid, int pid, int qty, double amount) {
+        orderID = oid;
+        customerID = cid;
+        productID = pid;
+        quantity = qty;
+        totalAmount = amount;
+
+        orderStatus = CREATED;
+        paymentStatus = PENDING;
+        paymentMethod = CASH;
+    }
+
+    void displayOrder() {
+        cout << "\n-----------------------------";
+        cout << "\nOrder ID: " << orderID;
+        cout << "\nCustomer ID: " << customerID;
+        cout << "\nProduct ID: " << productID;
+        cout << "\nQuantity: " << quantity;
+        cout << "\nTotal Amount: Rs. " << totalAmount;
+
+        cout << "\nOrder Status: ";
+
+        switch (orderStatus) {
+            case CREATED:
+                cout << "Created";
+                break;
+            case CONFIRMED:
+                cout << "Confirmed";
+                break;
+            case CANCELLED:
+                cout << "Cancelled";
+                break;
+            case DELIVERED:
+                cout << "Delivered";
+                break;
+        }
+
+        cout << "\nPayment Status: ";
+
+        switch (paymentStatus) {
+            case PENDING:
+                cout << "Pending";
+                break;
+            case SUCCESS:
+                cout << "Success";
+                break;
+            case FAILED:
+                cout << "Failed";
+                break;
+        }
+
+        cout << "\n-----------------------------\n";
+    }
+};
+
+
+int main() {
+    
+    Product p1(101, "Laptop", 60000, 5, ELECTRONICS);
+    Product p2(102, "T-Shirt", 1000, 10, CLOTHING);
+
+    Customer c1(
+        1,
+        "Krish",
+        "krish@gmail.com",
+        "9876543210",
+        "Lucknow"
+    );
+
+    Customer c2(
+        2,
+        "Rahul",
+        "rahul@gmail.com",
+        "9876501234",
+        "Delhi"
+    );
+
+    int choice;
+
+    do {
+        cout << "\n===== E-COMMERCE SYSTEM =====";
+        cout << "\n1. Display Products";
+        cout << "\n2. Display Customers";
+        cout << "\n3. Create Order";
+        cout << "\n4. Make Payment";
+        cout << "\n5. Confirm Order";
+        cout << "\n6. Cancel Order";
+        cout << "\n7. Display Order";
+        cout << "\n8. Update Customer";
+        cout << "\n0. Exit";
+
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+
+            p1.displayProduct();
+            p2.displayProduct();
+
+        }
+
+        else if (choice == 2) {
+
+            c1.displayCustomer();
+            c2.displayCustomer();
+
+        }
+
+        else if (choice == 3) {
+
+            int orderID, customerID, productID, quantity;
+
+            cout << "\nEnter Order ID: ";
+            cin >> orderID;
+
+            cout << "Enter Customer ID: ";
+            cin >> customerID;
+
+            // Validate customer
+            if (customerID != c1.getCustomerID() &&
+                customerID != c2.getCustomerID()) {
+
+                cout << "Invalid Customer ID!\n";
+                continue;
+            }
+
+            cout << "Enter Product ID: ";
+            cin >> productID;
+
+            Product* product = nullptr;
+
+            if (productID == p1.getProductID())
+                product = &p1;
+            else if (productID == p2.getProductID())
+                product = &p2;
+            else {
+                cout << "Invalid Product ID!\n";
+                continue;
+            }
+
+            cout << "Enter Quantity: ";
+            cin >> quantity;
+
+            // Validate quantity
+            if (quantity <= 0) {
+                cout << "Invalid quantity!\n";
+                continue;
+            }
+
+            // Check stock
+            if (!product->checkAvailability(quantity)) {
+                cout << "Product is out of stock!\n";
+                continue;
+            }
+
+            double total = product->getPrice() * quantity;
+
+            product->updateStock(-quantity);
+
+            Order order(
+                orderID,
+                customerID,
+                productID,
+                quantity,
+                total
+            );
+
+            cout << "\nOrder created successfully!";
+            order.displayOrder();
+
+            // Payment menu
+            int paymentChoice;
+
+            cout << "\nSelect Payment Method:";
+            cout << "\n1. Credit Card";
+            cout << "\n2. UPI";
+            cout << "\n3. Cash";
+            cout << "\nChoice: ";
+            cin >> paymentChoice;
+
+            if (paymentChoice == 1) {
+
+                int digits;
+
+                cout << "Enter last 4 digits: ";
+                cin >> digits;
+
+                if (digits < 1000 || digits > 9999) {
+                    cout << "Payment failed: Invalid card details!\n";
+                    order.paymentStatus = FAILED;
+                }
+                else {
+                    order.paymentMethod = CREDIT_CARD;
+                    order.paymentInfo.last4Digits = digits;
+                    order.paymentStatus = SUCCESS;
+
+                    cout << "Payment successful!\n";
+                }
+            }
+
+            else if (paymentChoice == 2) {
+
+                string upi;
+
+                cout << "Enter UPI ID: ";
+                cin >> upi;
+
+                if (upi.find('@') == string::npos) {
+                    cout << "Payment failed: Invalid UPI ID!\n";
+                    order.paymentStatus = FAILED;
+                }
+                else {
+                    order.paymentMethod = UPI;
+
+                    for (int i = 0;
+                         i < upi.length() && i < 29;
+                         i++) {
+
+                        order.paymentInfo.upiID[i] = upi[i];
+                        order.paymentInfo.upiID[i + 1] = '\0';
+                    }
+
+                    order.paymentStatus = SUCCESS;
+
+                    cout << "Payment successful!\n";
+                }
+            }
+
+            else if (paymentChoice == 3) {
+
+                order.paymentMethod = CASH;
+                order.paymentStatus = SUCCESS;
+
+                cout << "Cash payment successful!\n";
+            }
+
+            else {
+
+                cout << "Invalid payment method!\n";
+                order.paymentStatus = FAILED;
+            }
+
+            // Confirm order
+            if (order.paymentStatus == SUCCESS) {
+
+                order.orderStatus = CONFIRMED;
+
+                cout << "Order confirmed successfully!\n";
+            }
+            else {
+
+                cout << "Order cannot be confirmed because payment failed.\n";
+            }
+
+            order.displayOrder();
+        }
+
+        else if (choice == 4) {
+
+            cout << "\nPayment is handled during order creation.\n";
+        }
+
+        else if (choice == 5) {
+
+            cout << "\nOrder confirmation is handled after successful payment.\n";
+        }
+
+        else if (choice == 6) {
+
+            cout << "\nCancellation demonstration:";
+            cout << "\nA delivered order cannot be cancelled.";
+            cout << "\nA cancelled order cannot receive payment.\n";
+        }
+
+        else if (choice == 7) {
+
+            cout << "\nOrder details are displayed after creation.\n";
+        }
+
+        else if (choice == 8) {
+
+            string name, email, phone, address;
+
+            cout << "\nEnter new name: ";
+            cin >> name;
+
+            cout << "Enter new email: ";
+            cin >> email;
+
+            cout << "Enter new phone: ";
+            cin >> phone;
+
+            cout << "Enter new address: ";
+            cin >> address;
+
+            c1.updateCustomer(
+                name,
+                email,
+                phone,
+                address
+            );
+
+            cout << "Customer details updated!\n";
+        }
+
+        else if (choice != 0) {
+
+            cout << "Invalid menu choice!\n";
+        }
+
+    } while (choice != 0);
+
+    cout << "\nProgram ended.\n";
+
+    return 0;
+}
